@@ -1,0 +1,138 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>Julia集合</title>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/mathjs/3.8.1/math.min.js"></script>
+  </head>
+  <body>
+    <button id="jsbtn" type="button" onclick="draw('js')">描画</button>
+<!--    <button id="wabtn" type="button" onclick="draw('wa')">WebAssembly</button> -->
+    <div>
+        C =
+        <input id="creal" type="number" step="0.001" value="-0.3">
+        +
+        <input id="cimg" type="number" step="0.001" value="-0.64">i
+    </div>
+    <div>
+        Real:
+        min = <input id="min_real" type="number" step="0.001" value="-1.1">
+        max = <input id="max_real" type="number" step="0.001" value="-1.0">
+    </div>
+    <div>
+        Imaginary:
+        min = <input id="min_img" type="number" step="0.001" value="-0.55">
+        max = <input id="max_img" type="number" step="0.001" value="-0.45">
+    </div>
+    <div>
+        Iteration max: <input id="max_iter" type="number" value="256">
+    </div>
+    <div style="border: 1px; width: 480px; height: 480px">
+        <canvas id="canvas" width="480px" height="480px"></canvas>
+    </div>
+
+    <script type="text/javascript">
+        'use strict'
+
+        function draw(which) {
+            const C_R = Number(document.getElementById('creal').value);
+            const C_I = Number(document.getElementById('cimg').value);
+            const MIN_R = Number(document.getElementById('min_real').value);
+            const MAX_R = Number(document.getElementById('max_real').value);
+            const MIN_I = Number(document.getElementById('min_img').value);
+            const MAX_I = Number(document.getElementById('max_img').value);
+            const C = math.complex(C_R, C_I);
+            const MAX_ITER = Number(document.getElementById('max_iter').value);
+
+            if (MAX_R <= MIN_R) {
+                alert('Real:min should be less than Real:max.')
+                return;
+            }
+            if (MAX_I <= MIN_I) {
+                alert('Imaginary:min should be less than Imaginary:max.')
+                return;
+            }
+
+            const canvas = document.getElementById('canvas');
+            const width  = canvas.width;
+            const height = canvas.height;
+            const ctx    = canvas.getContext('2d');
+            const imageData = ctx.getImageData(0, 0, width, height);
+            const data = imageData.data;
+            const dr =  (MAX_R - MIN_R) / width ;
+            const di =  (MAX_I - MIN_I) / height;
+
+            if (which == 'js') {
+                const hsv2rgb = (h, s, v) => {
+                    const h_ = h * 6.0;
+                    const i = Math.floor(h_);
+                    const f = h_ - i;
+                    let r = 255 * v;
+                    let g = 255 * v;
+                    let b = 255 * v;
+                    switch (i) {
+                        case 0:
+                            g *= 1 - s * (1 - f);
+                            b *= 1 - s;
+                            break;
+                        case 1:
+                            r *= 1 - s * f;
+                            b *= 1 - s;
+                            break;
+                        case 2:
+                            r *= 1 - s;
+                            b *= 1 - s * (1 - f);
+                            break;
+                        case 3:
+                            r *= 1 - s;
+                            g *= 1 - s * f;
+                            break;
+                        case 4:
+                            r *= 1 - s * (1 - f);
+                            g *= 1 - s;
+                            break;
+                        case 5:
+                            g *= 1 - s;
+                            b *= 1 - s * f;
+                            break;
+                    }
+                    return b << 16 | g << 8 | r;
+                };
+
+                const calcJuliaSetPixColor = (x, y) => {
+                    let z = math.complex(x, y);
+                    for (let i = 0; i < MAX_ITER; i++) {
+                        z = z.mul(z).add(C);
+                        if (z.abs() > 2)
+                            return hsv2rgb(i / MAX_ITER, 1.0, 1.0);
+                    }
+                    return 0;
+                };
+
+                const drawjs = () => {
+                    let index = 0;
+                    const RANGE_R = MAX_R - MIN_R;
+                    const RANGE_I = MAX_I - MIN_I;
+                    for (let i = 0; i < height; i++) {
+                        const img = RANGE_I * i / height + MIN_I;
+                        for (let j = 0; j < width; j++) {
+                            const real = RANGE_R * j / width + MIN_R;
+                            const pix = calcJuliaSetPixColor(real, img);
+                            data[index++] = pix & 0xff;
+                            data[index++] = (pix >> 8) & 0xff;
+                            data[index++] = (pix >> 16) & 0xff;
+                            data[index++] = 255;
+                        }
+                    }
+                    ctx.putImageData(imageData, 0, 0);
+                }
+
+                drawjs();
+            }
+            else {
+
+                drawasm();
+            }
+        }
+    </script>
+  </body>
+</html>
