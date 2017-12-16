@@ -1931,7 +1931,7 @@ var ASM_CONSTS = [];
 
 STATIC_BASE = 1024;
 
-STATICTOP = STATIC_BASE + 96896;
+STATICTOP = STATIC_BASE + 96864;
   /* global initializers */  __ATINIT__.push({ func: function() { __GLOBAL__sub_I_runtime_ccall_cpp() } });
   
 
@@ -1940,7 +1940,7 @@ memoryInitializer = Module["wasmJSMethod"].indexOf("asmjs") >= 0 || Module["wasm
 
 
 
-var STATIC_BUMP = 96896;
+var STATIC_BUMP = 96864;
 Module["STATIC_BASE"] = STATIC_BASE;
 Module["STATIC_BUMP"] = STATIC_BUMP;
 
@@ -7826,6 +7826,12 @@ assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it a
 return real_setThrew.apply(null, arguments);
 };
 
+var real__myf = asm["_myf"]; asm["_myf"] = function() {
+assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
+assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
+return real__myf.apply(null, arguments);
+};
+
 var real__fflush = asm["_fflush"]; asm["_fflush"] = function() {
 assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
 assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
@@ -7854,12 +7860,6 @@ var real__llvm_bswap_i32 = asm["_llvm_bswap_i32"]; asm["_llvm_bswap_i32"] = func
 assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
 assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
 return real__llvm_bswap_i32.apply(null, arguments);
-};
-
-var real___GLOBAL__sub_I_runtime_ccall_cpp = asm["__GLOBAL__sub_I_runtime_ccall_cpp"]; asm["__GLOBAL__sub_I_runtime_ccall_cpp"] = function() {
-assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
-assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-return real___GLOBAL__sub_I_runtime_ccall_cpp.apply(null, arguments);
 };
 
 var real_stackAlloc = asm["stackAlloc"]; asm["stackAlloc"] = function() {
@@ -7964,14 +7964,15 @@ assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it a
 return real__memalign.apply(null, arguments);
 };
 
-var real__mf = asm["_mf"]; asm["_mf"] = function() {
+var real___GLOBAL__sub_I_runtime_ccall_cpp = asm["__GLOBAL__sub_I_runtime_ccall_cpp"]; asm["__GLOBAL__sub_I_runtime_ccall_cpp"] = function() {
 assert(runtimeInitialized, 'you need to wait for the runtime to be ready (e.g. wait for main() to be called)');
 assert(!runtimeExited, 'the runtime was exited (use NO_EXIT_RUNTIME to keep it alive after main() exits)');
-return real__mf.apply(null, arguments);
+return real___GLOBAL__sub_I_runtime_ccall_cpp.apply(null, arguments);
 };
 Module["asm"] = asm;
 var stackSave = Module["stackSave"] = function() { return Module["asm"]["stackSave"].apply(null, arguments) };
 var setThrew = Module["setThrew"] = function() { return Module["asm"]["setThrew"].apply(null, arguments) };
+var _myf = Module["_myf"] = function() { return Module["asm"]["_myf"].apply(null, arguments) };
 var _fflush = Module["_fflush"] = function() { return Module["asm"]["_fflush"].apply(null, arguments) };
 var setTempRet0 = Module["setTempRet0"] = function() { return Module["asm"]["setTempRet0"].apply(null, arguments) };
 var _memset = Module["_memset"] = function() { return Module["asm"]["_memset"].apply(null, arguments) };
@@ -7979,7 +7980,6 @@ var _sbrk = Module["_sbrk"] = function() { return Module["asm"]["_sbrk"].apply(n
 var _memcpy = Module["_memcpy"] = function() { return Module["asm"]["_memcpy"].apply(null, arguments) };
 var _start_task = Module["_start_task"] = function() { return Module["asm"]["_start_task"].apply(null, arguments) };
 var _llvm_bswap_i32 = Module["_llvm_bswap_i32"] = function() { return Module["asm"]["_llvm_bswap_i32"].apply(null, arguments) };
-var __GLOBAL__sub_I_runtime_ccall_cpp = Module["__GLOBAL__sub_I_runtime_ccall_cpp"] = function() { return Module["asm"]["__GLOBAL__sub_I_runtime_ccall_cpp"].apply(null, arguments) };
 var stackAlloc = Module["stackAlloc"] = function() { return Module["asm"]["stackAlloc"].apply(null, arguments) };
 var getTempRet0 = Module["getTempRet0"] = function() { return Module["asm"]["getTempRet0"].apply(null, arguments) };
 var _ntohs = Module["_ntohs"] = function() { return Module["asm"]["_ntohs"].apply(null, arguments) };
@@ -7998,7 +7998,7 @@ var stackRestore = Module["stackRestore"] = function() { return Module["asm"]["s
 var _malloc = Module["_malloc"] = function() { return Module["asm"]["_malloc"].apply(null, arguments) };
 var _pthread_mutex_lock = Module["_pthread_mutex_lock"] = function() { return Module["asm"]["_pthread_mutex_lock"].apply(null, arguments) };
 var _memalign = Module["_memalign"] = function() { return Module["asm"]["_memalign"].apply(null, arguments) };
-var _mf = Module["_mf"] = function() { return Module["asm"]["_mf"].apply(null, arguments) };
+var __GLOBAL__sub_I_runtime_ccall_cpp = Module["__GLOBAL__sub_I_runtime_ccall_cpp"] = function() { return Module["asm"]["__GLOBAL__sub_I_runtime_ccall_cpp"].apply(null, arguments) };
 var dynCall_iiii = Module["dynCall_iiii"] = function() { return Module["asm"]["dynCall_iiii"].apply(null, arguments) };
 var dynCall_vi = Module["dynCall_vi"] = function() { return Module["asm"]["dynCall_vi"].apply(null, arguments) };
 var dynCall_vii = Module["dynCall_vii"] = function() { return Module["asm"]["dynCall_vii"].apply(null, arguments) };
