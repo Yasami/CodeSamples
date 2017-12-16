@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html>
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, minimum-scale=1.0, initial-scale=1, user-scalable=yes" />
+  </head>
+  <body>
+    <div>
+      <input id="a" type="number" value="1242">+<input id="b" type="number" value="372">=<span id="c"></span>
+    </div>
+    <button type="button" onclick="calc()">Add!</button>   
+  <script>
+
+    'use strict'
+
+    function calc() {
+      const a = Number(document.getElementById('a').value);
+      const b = Number(document.getElementById('b').value);
+      fetch('sample.wasm')
+      .then(response => response.arrayBuffer())
+      .then(bytes => WebAssembly.compile(bytes))
+      .then(m     => new WebAssembly.Instance(m))
+      .then(instance => document.getElementById('c').innerText = instance.exports.myf(a, b));
+    }
+
+  </script>
+  </body>
+</html>
