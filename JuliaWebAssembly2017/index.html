@@ -20,7 +20,11 @@
       .then(response => response.arrayBuffer())
       .then(bytes => WebAssembly.compile(bytes))
       .then(m     => new WebAssembly.instantiate(m))
-      .then(instance => document.getElementById('c').innerText = instance.exports.myf(a, b));
+      .then(instance => update(instance));
+    }
+
+    function update(instance) {
+      document.getElementById('c').innerText = instance.exports.myf(a, b)
     }
 
   </script>
